@@ -59,8 +59,8 @@ private:
 class OptBase : public Opt
 {
 opt_member(OptBase, Opt):
-    void _init_() {}
-    void _quit_() {}
-    void _move_(OptBase&& rhs) {}
-    void _copy_(const OptBase& rhs) {OPT_Assert(false);}
+    void _init_() {} // 모든 멤버의 생성자 호출직후에 굳이 따로 처리해야 하는 일
+    void _quit_() {} // 모든 멤버의 소멸자 호출직후에 굳이 따로 처리해야 하는 일
+    void _move_(OptBase&& rhs) {} // _move_() 호출직후에 rhs._init_()가 호출
+    void _copy_(const OptBase& rhs) {OPT_Assert(false);} // _copy_() 호출직전에 _quit_()가 선택적 호출
 };
