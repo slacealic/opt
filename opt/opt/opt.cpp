@@ -13,9 +13,10 @@ public:
     }
 
 opt_member(A, OptBase):
-    void _init_()
+    void _init_(InitType type)
     {
-        mText = "Hello World!-1\n";
+        if(type == InitType::Create)
+            mText = "Hello World!-1\n";
     }
     void _quit_()
     {
@@ -29,7 +30,7 @@ opt_member(A, OptBase):
     {
         mText = rhs.mText;
     }
-    opt_init_override(const char* text)
+    opt_init(const char* text)
     {
         mText = text;
     }
