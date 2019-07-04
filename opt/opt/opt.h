@@ -40,7 +40,7 @@ private:
     typedef CLASS _self_; \
     typedef PARENT _super_; \
     protected: \
-    _self_(destructor quit) : _super_(quit) {} \
+    _self_(destructor quit) : _super_(quit), __VA_ARGS__ {} \
     public: \
     _self_() : _super_(_quit__), __VA_ARGS__ {_init_();} \
     _self_(_self_&& rhs) : _super_(_quit__), __VA_ARGS__ {_move_(OPT_Move(rhs)); rhs._init_();} \
