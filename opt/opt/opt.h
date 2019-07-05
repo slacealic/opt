@@ -43,10 +43,10 @@ private:
     _self_(destructor quit) : _super_(quit), __VA_ARGS__ {} \
     public: \
     _self_() : _super_(_quit__), __VA_ARGS__ {_init_(InitType::Create);} \
-    _self_(_self_&& rhs) : _super_(_quit__), __VA_ARGS__ {_move_(OPT_Move(rhs)); rhs._init_(InitType::MoveAfter);} \
+    _self_(_self_&& rhs) : _super_(_quit__), __VA_ARGS__ {_move_(OPT_Move(rhs)); rhs._init_(InitType::ClearOnly);} \
     _self_(const _self_& rhs) : _super_(_quit__), __VA_ARGS__ {_copy_(rhs);} \
     ~CLASS() {} \
-    _self_& operator=(_self_&& rhs) {_quit_(); _move_(OPT_Move(rhs)); rhs._init_(InitType::MoveAfter); return *this;} \
+    _self_& operator=(_self_&& rhs) {_quit_(); _move_(OPT_Move(rhs)); rhs._init_(InitType::ClearOnly); return *this;} \
     _self_& operator=(const _self_& rhs) {_quit_(); _copy_(rhs); return *this;} \
     private: \
     static void _quit__(Opt* opt) {((_self_*) opt)->_quit_();} \
@@ -55,7 +55,7 @@ private:
 class OptBase : public Opt
 {
 protected:
-    enum class InitType {Create, MoveAfter};
+    enum class InitType {Create, ClearOnly};
 opt_member(OptBase, Opt):
     void _init_(InitType type) {} // 모든 멤버의 생성자 호출직후에 굳이 따로 처리해야 하는 일
     void _quit_() {} // 모든 멤버의 소멸자 호출직후에 굳이 따로 처리해야 하는 일
