@@ -30,7 +30,7 @@ opt_member(A, OptBase):
     {
         mText = rhs.mText;
     }
-    opt_init(const char* text)
+    opt_special_init(const char* text)
     {
         mText = text;
     }

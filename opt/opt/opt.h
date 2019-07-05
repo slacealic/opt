@@ -43,10 +43,10 @@ private:
     _self_(destructor quit) : _super_(quit), __VA_ARGS__ {} \
     public: \
     _self_() : _super_(_quit__), __VA_ARGS__ {_init_(InitType::Create);} \
-    _self_(_self_&& rhs) : _super_(_quit__), __VA_ARGS__ {_move_(OPT_Move(rhs)); rhs._init_(InitType::Clear);} \
+    _self_(_self_&& rhs) : _super_(_quit__), __VA_ARGS__ {_move_(OPT_Move(rhs)); rhs._init_(InitType::MoveAfter);} \
     _self_(const _self_& rhs) : _super_(_quit__), __VA_ARGS__ {_copy_(rhs);} \
     ~CLASS() {} \
-    _self_& operator=(_self_&& rhs) {_quit_(); _move_(OPT_Move(rhs)); rhs._init_(InitType::Clear); return *this;} \
+    _self_& operator=(_self_&& rhs) {_quit_(); _move_(OPT_Move(rhs)); rhs._init_(InitType::MoveAfter); return *this;} \
     _self_& operator=(const _self_& rhs) {_quit_(); _copy_(rhs); return *this;} \
     private: \
     static void _quit__(Opt* opt) {((_self_*) opt)->_quit_();} \
@@ -55,25 +55,26 @@ private:
 class OptBase : public Opt
 {
 protected:
-    enum class InitType {Create, Clear};
+    enum class InitType {Create, MoveAfter};
 opt_member(OptBase, Opt):
     void _init_(InitType type) {} // 모든 멤버의 생성자 호출직후에 굳이 따로 처리해야 하는 일
     void _quit_() {} // 모든 멤버의 소멸자 호출직후에 굳이 따로 처리해야 하는 일
-    void _move_(OptBase&& rhs) {} // _move_() 직후에 rhs._init_(true)가 호출, 직전에 _quit_()가 선택적 호출
-    void _copy_(const OptBase& rhs) {OPT_Assert(false);} // _copy_() 직전에 _quit_()가 선택적 호출
+    void _move_(_self_&& rhs) {} // _move_() 직후에 rhs._init_(true)가 호출, 직전에 _quit_()가 선택적 호출
+    void _copy_(const _self_& rhs) {OPT_Assert(false);} // _copy_() 직전에 _quit_()가 선택적 호출
 };
 
 // 특수생성자1 : 부모는 일반생성자
-// → opt_init(A a, B b)
-// → opt_init(A a, B b), c(a)
-#define opt_init(...) \
+// → opt_special_init(A a, B b)
+// → opt_special_init(A a, B b), c(a)
+#define opt_special_init(...) \
     public: \
     _self_(__VA_ARGS__, destructor quit = _quit__) : _super_(quit)
 
 // 특수생성자2 : 부모도 특수생성자
-// → opt_init_ex(A a, B b) opt_super(a, b)
-// → opt_init_ex(A a, B b) opt_super(a, b), c(a)
-#define opt_init_with(...) \
+// → opt_special_init_(A a, B b)_with_super(a, b)
+// → opt_special_init_(A a, B b)_with_super(a, b), c(a)
+#define opt_special_init_(...) \
     public: \
     _self_(__VA_ARGS__, destructor quit = _quit__) : _super_
-#define opt_super(...) (__VA_ARGS__, quit)
+#define _with_super(...) \
+    (__VA_ARGS__, quit)
